@@ -30,7 +30,7 @@
               <ul>
                 <li v-for="(item,index) in goodsList ">
                   <div class="pic">
-                    <a href="#"><img v-lazy="'/static/'+ item.productImg" alt=""></a>
+                    <a href="#"><img v-lazy="'/static/'+ item.productImage" alt=""></a>
                   </div>
                   <div class="main">
                     <div class="name">{{ item.productName }}</div>
@@ -86,16 +86,17 @@
           NavFooter,
           NavBread
         },
-        mounted: function(){
-          this.getGoodsList();
+        mounted(){
+          axios.get("/goods").then((response)=>{
+            let res = response.data;
+            if(res.status=="0"){
+              this.goodsList = res.result.list;
+            }else{
+              this.goodsList = [];
+            }
+          })
         },
         methods:{
-          getGoodsList(){
-            axios.get("/goods").then((result)=>{
-              var res = result.data;
-             this.goodsList = res.data.result;
-            })
-          },
           showFilterPop(){
             this.filterBy=true;
             this.overLayFlag=true;

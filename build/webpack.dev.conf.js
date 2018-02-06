@@ -12,12 +12,10 @@ const portfinder = require('portfinder')
 
 const express = require('express')
 const app = express()
-var goodsData = require('../mock/goods.json')
-var router = express.Router()
+// var goodsData = require('../mock/goods.json')
+// var router = express.Router()
 
-
-
-app.use('/goods',router)
+// app.use('/goods',router)
 
 
 
@@ -53,14 +51,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
-    },
-    before(app){
-      app.get("/goods", function (req,res) {
-        res.json({
-          data: goodsData
-        })
-      })
     }
+    // before(app){
+    //   app.get("/goods", function (req,res) {
+    //     res.json({
+    //       data: goodsData
+    //     })
+    //   })
+    // }
   },
   plugins: [
     new webpack.DefinePlugin({
