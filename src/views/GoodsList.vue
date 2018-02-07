@@ -17,7 +17,7 @@
 					<div class="filter stopPop" id="filter" v-bind:class="{'filterby-show':filterBy}">
 						<dl class="filter-price">
 							<dt>Price:</dt>
-							<dd><a href="javascript:void(0)" v-bind:class="{'cur': priceChecked=='all'}"  v-on:click="priceChecked='all'">All</a></dd>
+							<dd><a href="javascript:void(0)" v-bind:class="{'cur': priceChecked=='all'}"  v-on:click="priceChecked=all">All</a></dd>
 							<dd v-for="(price,index) in priceFilter" >
 								<a href="javascript:void(0)" v-on:click="setPriceFilter(index)" v-bind:class="{'cur':priceChecked==index}">{{ price.startPrice }} - {{ price.endPrice }} </a>
 							</dd>
@@ -36,7 +36,7 @@
 										<div class="name">{{ item.productName }}</div>
 										<div class="price">{{ item.salePrice }}</div>
 										<div class="btn-area">
-											<a href="javascript:;" class="btn btn--m">加入购物车</a>
+											<a href="javascript:;" class="btn btn--m" @click="addCart(item.productId)">加入购物车</a>
 										</div>
 									</div>
 								</li>
@@ -157,6 +157,18 @@
 			        this.page++;
 			        this.getGoodsList(true);
 			      }, 500);
+					},
+					addCart(productId){
+						axios.post("/goods/addCart",{
+							productId:productId
+						}).then((res)=>{
+							console.log(res);
+							if(res.data.status == 0){
+								alert("加入成功");
+							}else{
+								alert("msg:",res.msg);
+							}
+						});
 					}
 					
 				}

@@ -18,6 +18,7 @@ mongoose.connection.on("disconnected",function(){
 	console.log("MongoDB connected disconnected.")
 });
 
+//查询商品列表
 router.get("/",function(req,res,next){
 	let page = parseInt(req.param("page"));
 	let pageSize = parseInt(req.param("pageSize"));
@@ -27,7 +28,6 @@ router.get("/",function(req,res,next){
 	let priceGt='';
 	let priceLte='';
 	let params = {};
-	console.log("没有执行到我")
 	if(priceLevel !='all'){
 		switch(priceLevel){
 			case '0':priceGt = 0;priceLte=100;break;
@@ -35,7 +35,6 @@ router.get("/",function(req,res,next){
 			case '2':priceGt = 500;priceLte=1000;break;
 			case '3':priceGt = 1000;priceLte=5000;break;
 		}
-		console.log("执行到我了。。")
 		params = {
 			salePrice:{
 				$gt: priceGt,
@@ -63,6 +62,80 @@ router.get("/",function(req,res,next){
 			})
 		}
 	})
-})
+});
 
+//加入到购物车
+router.post("/addCart",function(req,res,next){
+	let userId = '100000077'; 
+	let productId = req.body.productId;
+	let User = require('../models/user')
+
+	User.findOne({userId:userId},function(err,userDoc){
+		if(err){
+			res.json({
+				status:"1",
+				msg:err.message
+			})
+		}else{
+			// console.log("userDoc:",userDoc);
+			if(userDoc){
+				let goodsItem = '';
+				userDoc.cartList.forEach(function(item){
+					if(item.productId == productId){
+						goodsItem = item;
+						console.log(item);
+						item.productNum++;
+					}
+				});
+				if(goodsItem){
+					userDoc.save(function(err2,doc2){
+								if(err2){
+									res.json({
+										status:"1",
+										msg:err.message
+									})									
+								}else{
+									res.json({
+										status:"0",
+										msg:"",
+										result:"suc"
+									})											
+								}
+							});
+				}else{
+					Goods.findOne({productId:productId},function(err1,doc){
+						if(err1){
+							res.json({
+								status:"1",
+								msg:err.message
+							})
+						}else{
+							if(doc){
+								doc.productNum = 1;
+								doc.checked = 1;
+
+								userDoc.cartList.push(doc);
+								userDoc.save(function(err2,doc2){
+									if(err2){
+										res.json({
+											status:"1",
+											msg:err.message
+										})									
+									}else{
+										res.json({
+											status:"0",
+											msg:"",
+											result:"suc"
+										})											
+									}
+								});
+							}
+						}
+					})
+				}
+				
+			}
+		}
+	})
+});
 module.exports = router
