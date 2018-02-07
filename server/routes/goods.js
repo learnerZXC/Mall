@@ -21,9 +21,29 @@ mongoose.connection.on("disconnected",function(){
 router.get("/",function(req,res,next){
 	let page = parseInt(req.param("page"));
 	let pageSize = parseInt(req.param("pageSize"));
+	let priceLevel = req.param("priceLevel");
 	let sort = req.param("sort");
 	let skip = (page-1)*pageSize;
+	let priceGt='';
+	let priceLte='';
 	let params = {};
+	console.log("没有执行到我")
+	if(priceLevel !='all'){
+		switch(priceLevel){
+			case '0':priceGt = 0;priceLte=100;break;
+			case '1':priceGt = 100;priceLte=500;break;
+			case '2':priceGt = 500;priceLte=1000;break;
+			case '3':priceGt = 1000;priceLte=5000;break;
+		}
+		console.log("执行到我了。。")
+		params = {
+			salePrice:{
+				$gt: priceGt,
+				$lte: priceLte
+			}
+		}
+	}
+	console.log(req.params);
 	let goodsModel = Goods.find(params).skip(skip).limit(pageSize);
 	goodsModel.sort({'salePrice':sort});
 	goodsModel.exec({},function(err,doc){
